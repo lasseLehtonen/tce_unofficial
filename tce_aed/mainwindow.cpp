@@ -15,5 +15,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_action_Quit_triggered()
 {
+    qDebug() << "Quit action triggered.";
     QApplication::quit();
 }
