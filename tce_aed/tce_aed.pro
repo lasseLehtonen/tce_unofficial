@@ -4,18 +4,29 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = tce_aed
 TEMPLATE = app
 
+CONFIG += c++11
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    src/project.cpp \
+    src/asmcodepage.cpp \
+    src/asmcodecelldelegate.cpp \
+    src/asmcodemodel.cpp \
+    src/asmcodeslot.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    src/project.h \
+    src/asmcodepage.h \
+    src/asmcodecelldelegate.h \
+    src/asmcodemodel.h \
+    src/asmcodeslot.h
 
 FORMS    += mainwindow.ui
 

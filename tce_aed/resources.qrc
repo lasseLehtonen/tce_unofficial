@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/icons">
         <file>resources/icons/quit.png</file>
+        <file>resources/icons/new_document.png</file>
+        <file>resources/icons/save_as.png</file>
+        <file>resources/icons/save.png</file>
+        <file>resources/icons/open_document.png</file>
     </qresource>
 </RCC>
