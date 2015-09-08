@@ -72,6 +72,7 @@ bool Project::saveProject()
 
     tag.setAttribute("asmCodeFileName", asmCodeFileName_);
     tag.setAttribute("asmDataFileName", asmDataFileName_);
+    tag.setAttribute("projectFolder", projectFolderName_);
 
     QString xml = doc.toString();
     QString fileToSave = projectFolderName_ + projectFileName_;
@@ -91,5 +92,10 @@ bool Project::saveProject()
 QString Project::asmCodeFileName() const
 {
     return asmCodeFileName_;
+}
+
+QString Project::projectFolderName() const
+{
+    return projectFolderName_;
 }
 

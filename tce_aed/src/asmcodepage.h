@@ -22,14 +22,24 @@ public:
     void createNew(void);
     bool loadFile(QString fileName);
     bool saveFile(QString fileName);
+    void beautify(void);
+
+    void insertRowAbove(void);
+    void insertRowBelow(void);
+    void insertColumnLeft(void);
+    void insertColumnRight(void);
+    void deleteRows(void);
+    void deleteColumns(void);
 
 signals:
+    void modified(void);
 
 public slots:
     void on_cellChanged(int row, int col);
 
 private:
-    void initialize(void);
+    void renameColumns(void);
+    void setSpans(void);
 
     AsmCodeModel* model_;
     AsmCodeCellDelegate* delegate_;

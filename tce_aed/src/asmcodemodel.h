@@ -6,11 +6,14 @@
 #include <QAbstractTableModel>
 #include <vector>
 
+#include "common.h"
 #include "asmcodeslot.h"
 
 class AsmCodeModel : public QAbstractTableModel
 {
     Q_OBJECT
+public:
+
 public:
     AsmCodeModel(QObject* parent);
     AsmCodeModel(int rows, int columns, QObject* parent);
@@ -20,17 +23,32 @@ public:
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::DisplayRole);
     Qt::ItemFlags flags(const QModelIndex &index) const;
+    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
+    bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex());
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+    bool removeColumns(int column, int count, const QModelIndex &parent = QModelIndex());
 
-    const AsmCodeSlot& codeSlot(const QModelIndex & index) const;
+    void beautify(void);
+
+    CodeType type(const QModelIndex& index) const;
+    QString source(const QModelIndex& index) const;
+    QString destination(const QModelIndex& index) const;
+
+    int columnLength(int column) const;
+    std::vector<int> sourceLengths(void) const;
+
 
 signals:
+    void cellChanged(int row, int column);
 
 public slots:
+    void dataChange(const QModelIndex &index);
+
+private slots:
 
 private:
-    int rows_;
-    int columns_;
 
+    std::vector<int> cellSourceWidths_;
     std::vector<std::vector<AsmCodeSlot>> slots_;
 
 

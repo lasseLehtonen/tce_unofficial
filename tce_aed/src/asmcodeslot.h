@@ -1,35 +1,31 @@
 #ifndef ASMCODESLOT_H
 #define ASMCODESLOT_H
 
+#include "common.h"
 #include <QString>
 
 class AsmCodeSlot
 {
 public:
-    enum class Type {COMMENT, ADDRESS, MOVE, EMPTY};
-    struct Code {
-        QString functionUnit;
-        QString operation;
-        QString port;
-    };
 
 public:
     AsmCodeSlot();
 
-    Type type() const;
+    CodeType type() const;
 
     QString data() const;
     void setData(const QString &data);
 
-    const Code &source() const;
+    const QString &source() const;
 
-    const Code &destination() const;
+    const QString &destination() const;
 
 private:
-    Type type_;
+
+    CodeType type_;
     QString data_;
-    Code source_;
-    Code destination_;
+    QString source_;
+    QString destination_;
 };
 
 #endif // ASMCODESLOT_H

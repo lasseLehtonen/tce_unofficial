@@ -13,6 +13,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->actionSave->setDisabled(true);
+    asmCodePage_ = new AsmCodePage(this);
+    QObject::connect(asmCodePage_, SIGNAL(modified()), this, SLOT(on_projectModifed()));
+    ui->tabWidget->addTab(asmCodePage_, "N/A code");
 }
 
 MainWindow::~MainWindow()
@@ -38,8 +41,15 @@ void MainWindow::on_projectClosed()
 
     ui->tabWidget->clear();
 
-    delete project_;
-    project_ = nullptr;
+    if (project_) {
+        delete project_;
+        project_ = nullptr;
+    }
+
+    if (asmCodePage_) {
+        delete asmCodePage_;
+    }
+    asmCodePage_ = new AsmCodePage(this);
 }
 
 void MainWindow::on_action_Quit_triggered()
@@ -77,9 +87,6 @@ void MainWindow::on_actionNewProject_triggered()
     QObject::connect(project_, SIGNAL(modified()), this, SLOT(on_projectModifed()));
 
     project_->newProject();
-    if (!asmCodePage_) {
-        asmCodePage_ = new AsmCodePage(this);
-    }
     asmCodePage_->createNew();
     ui->actionInfo->toggled(true);
     ui->actionInfo->setChecked(true);
@@ -91,6 +98,7 @@ void MainWindow::on_actionNewProject_triggered()
 void MainWindow::on_actionSave_triggered()
 {
     project_->saveProject();
+    asmCodePage_->saveFile(project_->projectFolderName() + project_->asmCodeFileName());
     ui->actionSave->setDisabled(true);
 }
 
@@ -101,15 +109,6 @@ void MainWindow::on_actionSave_as_triggered()
 
 void MainWindow::on_actionInfo_toggled(bool arg1)
 {
-    /*
-    if (arg1 && project_) {
-        infoTabIndex_ = ui->tabWidget->addTab(new QTextBrowser(this), "Info");
-    } else {
-        ui->tabWidget->indexOf(&asmCodePage_);
-        ui->tabWidget->removeTab(infoTabIndex_);
-        infoTabIndex_ = -1;
-    }
-    */
 }
 
 void MainWindow::on_actionAssembly_code_editor_toggled(bool arg1)
@@ -155,12 +154,45 @@ void MainWindow::on_actionOpenProject_triggered()
     project_ = new Project(fileName, this);
     QObject::connect(project_, SIGNAL(modified()), this, SLOT(on_projectModifed()));
 
-    if (!asmCodePage_) {
-        asmCodePage_ = new AsmCodePage(this);
-    }
     project_->loadProject();
+    asmCodePage_->loadFile(project_->projectFolderName() + project_->asmCodeFileName());
     ui->actionInfo->toggled(true);
     ui->actionInfo->setChecked(true);
     ui->actionAssembly_code_editor->toggled(true);
     ui->actionAssembly_code_editor->setChecked(true);
+}
+
+void MainWindow::on_actionBeautify_triggered()
+{
+    asmCodePage_->beautify();
+}
+
+void MainWindow::on_actionInsert_row_above_triggered()
+{
+    asmCodePage_->insertRowAbove();
+}
+
+void MainWindow::on_actionInsert_row_below_triggered()
+{
+    asmCodePage_->insertRowBelow();
+}
+
+void MainWindow::on_actionInsert_column_left_triggered()
+{
+    asmCodePage_->insertColumnLeft();
+}
+
+void MainWindow::on_actionInsert_column_right_triggered()
+{
+    asmCodePage_->insertColumnRight();
+}
+
+void MainWindow::on_actionDelete_column_triggered()
+{
+    asmCodePage_->deleteColumns();
+}
+
+void MainWindow::on_actionDelete_row_triggered()
+{
+    asmCodePage_->deleteRows();
 }

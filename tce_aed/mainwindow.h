@@ -38,6 +38,20 @@ private slots:
 
     void on_actionOpenProject_triggered();
 
+    void on_actionBeautify_triggered();
+
+    void on_actionInsert_row_above_triggered();
+
+    void on_actionInsert_row_below_triggered();
+
+    void on_actionInsert_column_left_triggered();
+
+    void on_actionInsert_column_right_triggered();
+
+    void on_actionDelete_column_triggered();
+
+    void on_actionDelete_row_triggered();
+
 private:
     Ui::MainWindow *ui;
     Project* project_;

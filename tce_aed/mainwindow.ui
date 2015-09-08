@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>499</width>
     <height>300</height>
    </rect>
   </property>
@@ -47,7 +47,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>499</width>
      <height>25</height>
     </rect>
    </property>
@@ -110,6 +110,13 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionBeautify"/>
+   <addaction name="actionInsert_row_above"/>
+   <addaction name="actionInsert_row_below"/>
+   <addaction name="actionInsert_column_left"/>
+   <addaction name="actionInsert_column_right"/>
+   <addaction name="actionDelete_column"/>
+   <addaction name="actionDelete_row"/>
   </widget>
   <action name="action_Quit">
    <property name="icon">
@@ -176,6 +183,87 @@
    </property>
    <property name="text">
     <string>Assembly code editor</string>
+   </property>
+  </action>
+  <action name="actionBeautify">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/resources/icons/beautify.png</normaloff>:/icons/resources/icons/beautify.png</iconset>
+   </property>
+   <property name="text">
+    <string>Beautify</string>
+   </property>
+  </action>
+  <action name="actionInsert_row_above">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/resources/icons/insert_column_above.png</normaloff>:/icons/resources/icons/insert_column_above.png</iconset>
+   </property>
+   <property name="text">
+    <string>Insert row above</string>
+   </property>
+   <property name="toolTip">
+    <string>Insert row above the current one</string>
+   </property>
+  </action>
+  <action name="actionInsert_row_below">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/resources/icons/inesrt_column_below.png</normaloff>:/icons/resources/icons/inesrt_column_below.png</iconset>
+   </property>
+   <property name="text">
+    <string>Insert row below</string>
+   </property>
+   <property name="toolTip">
+    <string>Insert row below the current one</string>
+   </property>
+  </action>
+  <action name="actionInsert_column_left">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/resources/icons/insert_row_left.png</normaloff>:/icons/resources/icons/insert_row_left.png</iconset>
+   </property>
+   <property name="text">
+    <string>Insert column left</string>
+   </property>
+   <property name="toolTip">
+    <string>Insert new column on the left side</string>
+   </property>
+  </action>
+  <action name="actionInsert_column_right">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/resources/icons/insert_row_right.png</normaloff>:/icons/resources/icons/insert_row_right.png</iconset>
+   </property>
+   <property name="text">
+    <string>Insert column right</string>
+   </property>
+   <property name="toolTip">
+    <string>Insert new column on the right side</string>
+   </property>
+  </action>
+  <action name="actionDelete_column">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/resources/icons/delete_column.png</normaloff>:/icons/resources/icons/delete_column.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete column</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete current column</string>
+   </property>
+  </action>
+  <action name="actionDelete_row">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/resources/icons/delete_row.png</normaloff>:/icons/resources/icons/delete_row.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete row</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete current row</string>
    </property>
   </action>
  </widget>

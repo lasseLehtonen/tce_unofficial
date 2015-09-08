@@ -26,7 +26,8 @@ HEADERS  += mainwindow.h \
     src/asmcodepage.h \
     src/asmcodecelldelegate.h \
     src/asmcodemodel.h \
-    src/asmcodeslot.h
+    src/asmcodeslot.h \
+    src/common.h
 
 FORMS    += mainwindow.ui
 

@@ -15,6 +15,7 @@ public:
     bool saveProject(void);
 
     QString asmCodeFileName() const;
+    QString projectFolderName() const;
 
 signals:
     void modified(void);

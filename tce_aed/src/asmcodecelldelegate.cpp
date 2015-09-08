@@ -1,5 +1,4 @@
 #include "asmcodecelldelegate.h"
-#include "asmcodeslot.h"
 #include "asmcodemodel.h"
 
 #include <QTextEdit>
@@ -29,7 +28,6 @@ void AsmCodeCellDelegate::setEditorData(QWidget *editor, const QModelIndex &inde
     QLineEdit* edit = static_cast<QLineEdit*>(editor);
     QString data = index.model()->data(index, Qt::EditRole).toString();
     edit->setText(data);
-    qDebug() << "Set editor with" << data;
 }
 
 void AsmCodeCellDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
@@ -37,24 +35,27 @@ void AsmCodeCellDelegate::setModelData(QWidget *editor, QAbstractItemModel *mode
     QLineEdit* edit = static_cast<QLineEdit*>(editor);
     QString data = edit->text();
     model->setData(index, data, Qt::EditRole);
+    AsmCodeModel* asmModel = static_cast<AsmCodeModel*>(model);
+    asmModel->dataChange(index);
 }
 
 void AsmCodeCellDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QStringList list;
     const AsmCodeModel* asmModel = static_cast<const AsmCodeModel*>(index.model());
-    switch (asmModel->codeSlot(index).type()) {
-    case AsmCodeSlot::Type::COMMENT:
-        list << asmModel->codeSlot(index).data();
+    switch (asmModel->type(index)) {
+    case CodeType::COMMENT:
+        list << asmModel->data(index).toString();
         break;
-    case AsmCodeSlot::Type::MOVE:
-        list << asmModel->codeSlot(index).source().operation << " -> "
-             << asmModel->codeSlot(index).destination().operation;
+    case CodeType::MOVE:
+        list << asmModel->source(index)
+             << " -> "
+             << asmModel->destination(index);
         break;
-    case AsmCodeSlot::Type::ADDRESS:
-        list << asmModel->codeSlot(index).data();
+    case CodeType::ADDRESS:
+        list << asmModel->data(index).toString();
         break;
-    case AsmCodeSlot::Type::EMPTY:
+    case CodeType::EMPTY:
         list << "";
         break;
     default:
@@ -78,7 +79,6 @@ void AsmCodeCellDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
     for(QString& s : list) {
         int textWidth = fm.width(s);
-
         painter->drawText(area, s);
         area.setLeft(textWidth + area.left());
     }
@@ -92,7 +92,28 @@ void AsmCodeCellDelegate::updateEditorGeometry(QWidget *editor, const QStyleOpti
 
 QSize AsmCodeCellDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QString text = index.model()->data(index).toString();
+    QString text;
+
+    const AsmCodeModel* asmModel = static_cast<const AsmCodeModel*>(index.model());
+    switch (asmModel->type(index)) {
+    case CodeType::COMMENT:
+        text = asmModel->data(index).toString();
+        break;
+    case CodeType::MOVE:
+        text = asmModel->source(index)
+             + " -> "
+             + asmModel->destination(index);
+        break;
+    case CodeType::ADDRESS:
+        text = asmModel->data(index).toString();
+        break;
+    case CodeType::EMPTY:
+        text = "";
+        break;
+    default:
+        text = "";
+        break;
+    }
 
     QFont font(fontFamily_, fontPointSize_, QFont::Bold, false);
 
@@ -100,6 +121,6 @@ QSize AsmCodeCellDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
     int textWidth = fm.width(text);
     int textHeight = fm.height();
 
-    return QSize(textWidth + 2, textHeight);
+    return QSize(textWidth + 2 + 2, textHeight);
 }
 

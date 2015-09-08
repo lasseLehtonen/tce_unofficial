@@ -1,13 +1,14 @@
 #include "asmcodeslot.h"
+
 #include <QDebug>
 
 AsmCodeSlot::AsmCodeSlot() :
-    type_(AsmCodeSlot::Type::EMPTY)
+    type_(CodeType::EMPTY)
 {
 
 }
 
-AsmCodeSlot::Type AsmCodeSlot::type() const
+CodeType AsmCodeSlot::type() const
 {
     return type_;
 }
@@ -15,10 +16,10 @@ AsmCodeSlot::Type AsmCodeSlot::type() const
 QString AsmCodeSlot::data() const
 {
     switch (type_) {
-    case Type::EMPTY:
-    case Type::COMMENT:
-    case Type::ADDRESS:
-    case Type::MOVE:
+    case CodeType::EMPTY:
+    case CodeType::COMMENT:
+    case CodeType::ADDRESS:
+    case CodeType::MOVE:
     default:
         return data_;
     }
@@ -29,34 +30,34 @@ void AsmCodeSlot::setData(const QString &data)
     QString temp = data.trimmed();
     if (!data.isEmpty()) {
         if (temp.startsWith('#')) {
-            type_ = Type::COMMENT;
+            type_ = CodeType::COMMENT;
             data_ = temp;
         } else {
             int idx = temp.indexOf("->", 0);
             if (idx != -1) {
-                type_ = Type::MOVE;
+                type_ = CodeType::MOVE;
                 QString lhs = temp.left(idx).trimmed();
                 QString rhs = temp.right(temp.size() - idx - 2).trimmed();
-                source_.operation = lhs;
-                destination_.operation = rhs;
+                source_ = lhs;
+                destination_ = rhs;
                 data_ = lhs + " -> " + rhs;
             } else {
-                type_ = Type::ADDRESS;
+                type_ = CodeType::ADDRESS;
                 data_ = temp;
             }
         }
     } else {
-        type_ = Type::EMPTY;
+        type_ = CodeType::EMPTY;
         data_ = "";
     }
 }
 
-const AsmCodeSlot::Code& AsmCodeSlot::source() const
+const QString& AsmCodeSlot::source() const
 {
     return source_;
 }
 
-const AsmCodeSlot::Code &AsmCodeSlot::destination() const
+const QString &AsmCodeSlot::destination() const
 {
     return destination_;
 }
