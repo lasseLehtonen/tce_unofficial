@@ -300,7 +300,9 @@ void AsmCodePage::setSpans()
             || model_->type(model_->index(row, 0)) == CodeType::COMMENT) {
             setSpan(row, 0, 1, model_->columnCount());
         } else {
-            setSpan(row, 0, 1, 1);
+            if(columnSpan(row, 0) > 1) {
+                setSpan(row, 0, 1, 1);
+            }
         }
     }
 }
