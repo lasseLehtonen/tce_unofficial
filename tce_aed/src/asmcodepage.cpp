@@ -31,6 +31,7 @@ void AsmCodePage::createNew()
 
 bool AsmCodePage::loadFile(QString fileName)
 {
+    qDebug() << "Loading " << fileName;
     int rows = 0;
     int columns = 2;
     QFile in(fileName);
@@ -57,18 +58,18 @@ bool AsmCodePage::loadFile(QString fileName)
         } else if (line.startsWith(" ")) {
             int idx = 0;
             int col = 0;
-            while (line.mid(idx).contains(",")) {
+            while (line.mid(idx).contains(",")) {                
                 int comma = line.mid(idx).indexOf(",");
                 col++;
                 if (col >= columns - 1) {
                     model_->insertColumns(columns - 1, 1);
                     columns++;
                 }
-                QString s = line.mid(idx, comma-idx).trimmed();
+                QString s = line.mid(idx, comma).trimmed();
                 if (!s.contains("...")) {
                     model_->setData(model_->index(rows, col), s);
                 }
-                idx = comma + 1;
+                idx += comma + 1;
             }
             if (line.mid(idx).contains(";")) {
                 int len = line.mid(idx).size();
@@ -213,6 +214,7 @@ void AsmCodePage::insertColumnLeft()
     }
     setSpans();
     renameColumns();
+    modified();
 }
 
 void AsmCodePage::insertColumnRight()
@@ -230,6 +232,7 @@ void AsmCodePage::insertColumnRight()
     }
     setSpans();
     renameColumns();
+    modified();
 }
 
 void AsmCodePage::deleteRows()
@@ -267,6 +270,7 @@ void AsmCodePage::deleteColumns()
 
     model_->removeColumns(min, max-min+1);
 
+    setSpans();
     modified();
     renameColumns();
 }
