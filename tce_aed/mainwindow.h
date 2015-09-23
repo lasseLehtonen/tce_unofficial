@@ -52,6 +52,10 @@ private slots:
 
     void on_actionDelete_row_triggered();
 
+    void on_actionCopy_triggered();
+
+    void on_actionPaste_triggered();
+
 private:
     Ui::MainWindow *ui;
     Project* project_;

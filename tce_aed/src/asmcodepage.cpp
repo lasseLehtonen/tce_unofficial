@@ -248,8 +248,9 @@ void AsmCodePage::deleteRows()
             max = index.row();
         }
     }
-
-    model_->removeRows(min, max-min+1);
+    if (min != -1 && max != -1) {
+        model_->removeRows(min, max-min+1);
+    }
 
     modified();
 }
@@ -268,11 +269,63 @@ void AsmCodePage::deleteColumns()
         }
     }
 
-    model_->removeColumns(min, max-min+1);
+    if (min != -1 && max != -1) {
+        model_->removeColumns(min, max-min+1);
+    }
 
     setSpans();
     modified();
     renameColumns();
+}
+
+void AsmCodePage::copy()
+{
+    int minRow = -1;
+    int minCol = -1;
+    copiedItems_.clear();
+    QModelIndexList list = this->selectionModel()->selectedIndexes();
+    for (auto& index : list) {
+        if (minRow == -1 || index.row() < minRow) {
+            minRow = index.row();
+        }
+        if (minCol == -1 || index.column() < minCol) {
+            minCol = index.column();
+        }
+    }
+    for (auto& index : list) {
+        CopyItem temp;
+        temp.row = index.row() - minRow;
+        temp.column = index.column() - minCol;
+        temp.content = index.data().toString();
+        copiedItems_.push_back(temp);
+    }
+}
+
+void AsmCodePage::paste()
+{
+    int minRow = -1;
+    int minCol = -1;
+    QModelIndexList list = this->selectionModel()->selectedIndexes();
+    for (auto& index : list) {
+        if (minRow == -1 || index.row() < minRow) {
+            minRow = index.row();
+        }
+        if (minCol == -1 || index.column() < minCol) {
+            minCol = index.column();
+        }
+    }
+    for (auto& item : copiedItems_) {
+        while (item.row + minRow >= model_->rowCount()) {
+            model_->insertRow(model_->rowCount());
+        }
+        while (item.column + minCol >= model_->columnCount()) {
+            model_->insertColumn(model_->columnCount());
+        }
+        auto index = model_->index(item.row + minRow, item.column + minCol);
+        model_->setData(index, item.content);
+    }
+    beautify();
+    modified();
 }
 
 

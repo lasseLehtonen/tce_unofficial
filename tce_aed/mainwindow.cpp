@@ -196,3 +196,13 @@ void MainWindow::on_actionDelete_row_triggered()
 {
     asmCodePage_->deleteRows();
 }
+
+void MainWindow::on_actionCopy_triggered()
+{
+    asmCodePage_->copy();
+}
+
+void MainWindow::on_actionPaste_triggered()
+{
+    asmCodePage_->paste();
+}

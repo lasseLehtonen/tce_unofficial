@@ -30,6 +30,8 @@ public:
     void insertColumnRight(void);
     void deleteRows(void);
     void deleteColumns(void);
+    void copy(void);
+    void paste(void);
 
 signals:
     void modified(void);
@@ -38,11 +40,19 @@ public slots:
     void on_cellChanged(int row, int col);
 
 private:
+    struct CopyItem {
+        int row;
+        int column;
+        QString content;
+    };
+
+private:
     void renameColumns(void);
     void setSpans(void);
 
     AsmCodeModel* model_;
     AsmCodeCellDelegate* delegate_;
+    std::vector<CopyItem> copiedItems_;
 };
 
 #endif // ASMCODEPAGE_H
