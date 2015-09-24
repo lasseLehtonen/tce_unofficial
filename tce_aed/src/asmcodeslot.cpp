@@ -15,22 +15,20 @@ CodeType AsmCodeSlot::type() const
 
 QString AsmCodeSlot::data() const
 {
-    switch (type_) {
-    case CodeType::EMPTY:
-    case CodeType::COMMENT:
-    case CodeType::ADDRESS:
-    case CodeType::MOVE:
-    default:
-        return data_;
-    }
+    return data_;
 }
 
 void AsmCodeSlot::setData(const QString &data)
 {
+    source_ = "";
+    destination_ = "";
     QString temp = data.trimmed();
     if (!data.isEmpty()) {
         if (temp.startsWith('#')) {
             type_ = CodeType::COMMENT;
+            data_ = temp;
+        } else if (temp == "...") {
+            type_ = CodeType::NOP;
             data_ = temp;
         } else {
             int idx = temp.indexOf("->", 0);

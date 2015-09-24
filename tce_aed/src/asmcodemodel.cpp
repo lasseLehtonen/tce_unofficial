@@ -66,6 +66,7 @@ bool AsmCodeModel::insertRows(int row, int count, const QModelIndex &parent)
         slots_.insert(slots_.begin()+row, codeRow);
     }
     endInsertRows();
+    return true;
 }
 
 bool AsmCodeModel::insertColumns(int column, int count, const QModelIndex &parent)
@@ -81,6 +82,7 @@ bool AsmCodeModel::insertColumns(int column, int count, const QModelIndex &paren
         cellSourceWidths_.insert(cellSourceWidths_.begin()+column, 0);
     }
     endInsertColumns();
+    return true;
 }
 
 bool AsmCodeModel::removeRows(int row, int count, const QModelIndex &parent)
@@ -90,6 +92,7 @@ bool AsmCodeModel::removeRows(int row, int count, const QModelIndex &parent)
         slots_.erase(slots_.begin()+row);
     }
     endRemoveRows();
+    return true;
 }
 
 bool AsmCodeModel::removeColumns(int column, int count, const QModelIndex &parent)
@@ -99,6 +102,7 @@ bool AsmCodeModel::removeColumns(int column, int count, const QModelIndex &paren
         slots_.at(row).erase(slots_.at(row).begin()+column, slots_.at(row).begin()+column+count);
     }
     endRemoveColumns();
+    return true;
 }
 
 void AsmCodeModel::beautify()
@@ -141,8 +145,8 @@ std::vector<int> AsmCodeModel::sourceLengths() const
     sourceLens.assign(columnCount(), 0);
     for (int row = 0; row < rowCount(); ++row) {
         for (int col = 0; col < columnCount(); ++col) {
-            if (slots_.at(row).at(col).source().size() > sourceLens.at(col)) {
-                sourceLens.at(col) = slots_.at(row).at(col).source().size();
+            if (slots_.at(row).at(col).source().trimmed().size() > sourceLens.at(col)) {
+                sourceLens.at(col) = slots_.at(row).at(col).source().trimmed().size();
             }
         }
     }

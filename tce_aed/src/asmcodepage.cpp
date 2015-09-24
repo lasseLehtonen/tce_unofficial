@@ -117,7 +117,8 @@ bool AsmCodePage::saveFile(QString fileName)
 
         bool codeLine = false;
         for (int col = 1; col < model_->columnCount(); ++col) {
-            if (model_->type(model_->index(row, col)) == CodeType::MOVE) {
+            if (model_->type(model_->index(row, col)) == CodeType::MOVE ||
+                    model_->type(model_->index(row, col)) == CodeType::NOP) {
                 codeLine = true;
                 break;
             }
@@ -132,7 +133,8 @@ bool AsmCodePage::saveFile(QString fileName)
                         + " -> "
                         + model_->destination(idx);
                     stream << temp.leftJustified(model_->columnLength(col));
-                } else if (model_->type(model_->index(row, col)) == CodeType::EMPTY) {
+                } else if (model_->type(model_->index(row, col)) == CodeType::EMPTY
+                           || model_->type(model_->index(row, col)) == CodeType::NOP) {
                     stream << QString("...") .leftJustified(model_->columnLength(col));
                 } else {
                     qDebug() << "Error(1) in saving??";
