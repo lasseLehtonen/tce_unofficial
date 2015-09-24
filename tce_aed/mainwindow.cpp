@@ -206,3 +206,13 @@ void MainWindow::on_actionPaste_triggered()
 {
     asmCodePage_->paste();
 }
+
+void MainWindow::on_actionCut_triggered()
+{
+    asmCodePage_->cut();
+}
+
+void MainWindow::on_actionClear_triggered()
+{
+    asmCodePage_->clear();
+}

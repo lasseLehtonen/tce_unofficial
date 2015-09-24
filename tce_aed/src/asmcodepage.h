@@ -31,7 +31,9 @@ public:
     void deleteRows(void);
     void deleteColumns(void);
     void copy(void);
+    void cut(void);
     void paste(void);
+    void clear(void);
 
 signals:
     void modified(void);

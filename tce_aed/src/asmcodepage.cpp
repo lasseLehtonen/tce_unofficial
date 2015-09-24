@@ -301,6 +301,12 @@ void AsmCodePage::copy()
     }
 }
 
+void AsmCodePage::cut()
+{
+    copy();
+    clear();
+}
+
 void AsmCodePage::paste()
 {
     int minRow = -1;
@@ -323,6 +329,16 @@ void AsmCodePage::paste()
         }
         auto index = model_->index(item.row + minRow, item.column + minCol);
         model_->setData(index, item.content);
+    }
+    beautify();
+    modified();
+}
+
+void AsmCodePage::clear()
+{
+    QModelIndexList list = this->selectionModel()->selectedIndexes();
+    for (auto& index : list) {
+        model_->setData(index, "");
     }
     beautify();
     modified();
