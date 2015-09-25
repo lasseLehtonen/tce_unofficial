@@ -1,6 +1,6 @@
 # tce_unofficial
 * Unofficial tool(s) for TCE
-** Assembly Editortce_ aed
+  * Assembly Editor tce_ aed
 
 * Depends
-** Qt 5.5.
+  * Qt 5.5.
