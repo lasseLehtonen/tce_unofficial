@@ -34,11 +34,14 @@ public:
     void cut(void);
     void paste(void);
     void clear(void);
+    void undo(void);
+    void redo(void);
 
-signals:
+signals:    
     void modified(void);
 
 public slots:
+    void beforeModification(void);
     void on_cellChanged(int row, int col);
 
 private:
@@ -55,6 +58,8 @@ private:
     AsmCodeModel* model_;
     AsmCodeCellDelegate* delegate_;
     std::vector<CopyItem> copiedItems_;
+    std::vector<AsmCodeModel*> undoStack_;
+    std::vector<AsmCodeModel*> redoStack_;
 };
 
 #endif // ASMCODEPAGE_H

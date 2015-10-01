@@ -58,6 +58,9 @@ void AsmCodeCellDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     case CodeType::EMPTY:
         list << "";
         break;
+    case CodeType::NOP:
+        list << "...";
+        break;
     default:
         list << "N/A";
         break;

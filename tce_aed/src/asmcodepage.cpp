@@ -11,6 +11,7 @@ AsmCodePage::AsmCodePage(QWidget *parent) : QTableView(parent)
     setItemDelegate(delegate_);
     this->setAlternatingRowColors(true);
     QWidget::connect(model_, SIGNAL(cellChanged(int, int)), this, SLOT(on_cellChanged(int, int)));
+    QWidget::connect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
 }
 
 AsmCodePage::~AsmCodePage()
@@ -20,6 +21,7 @@ AsmCodePage::~AsmCodePage()
 
 void AsmCodePage::createNew()
 {
+    disconnect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
     model_->insertRows(0, 5);
     model_->insertColumns(0, 2);
     model_->setData(model_->index(0, 0), "CODE;");
@@ -27,11 +29,12 @@ void AsmCodePage::createNew()
     model_->setData(model_->index(3, 0), "main:");
     model_->beautify();
     renameColumns();
+    QWidget::connect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
 }
 
 bool AsmCodePage::loadFile(QString fileName)
 {
-    qDebug() << "Loading " << fileName;
+    disconnect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
     int rows = 0;
     int columns = 2;
     QFile in(fileName);
@@ -66,17 +69,17 @@ bool AsmCodePage::loadFile(QString fileName)
                     columns++;
                 }
                 QString s = line.mid(idx, comma).trimmed();
-                if (!s.contains("...")) {
+                //if (!s.contains("...")) {
                     model_->setData(model_->index(rows, col), s);
-                }
+                //}
                 idx += comma + 1;
             }
             if (line.mid(idx).contains(";")) {
                 int len = line.mid(idx).size();
                 QString s = line.mid(idx, len-1).trimmed();
-                if (!s.contains("...")) {
+                //if (!s.contains("...")) {
                     model_->setData(model_->index(rows, col + 1), s);
-                }
+                //}
             }
         } else {
             model_->setData(model_->index(rows, 0), line);
@@ -87,7 +90,7 @@ bool AsmCodePage::loadFile(QString fileName)
     beautify();
     renameColumns();
 
-
+    QWidget::connect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
     return true;
 }
 
@@ -174,13 +177,13 @@ void AsmCodePage::insertRowAbove()
             minIdx = index.row();
         }
     }
+    beforeModification();
     if (minIdx != -1) {
         model_->insertRows(minIdx, 1);
-        modified();
     } else {
         model_->insertRows(0, 1);
-        modified();
     }
+    beautify();
 }
 
 void AsmCodePage::insertRowBelow()
@@ -192,13 +195,13 @@ void AsmCodePage::insertRowBelow()
             maxIdx = index.row();
         }
     }
+    beforeModification();
     if(maxIdx != -1) {
         model_->insertRows(maxIdx + 1, 1);
-        modified();
     } else {
-        model_->insertRows(0, 1);
-        modified();
+        model_->insertRows(0, 1);                
     }
+    beautify();
 }
 
 void AsmCodePage::insertColumnLeft()
@@ -211,12 +214,12 @@ void AsmCodePage::insertColumnLeft()
         }
     }
     if (minIdx != -1) {
+        beforeModification();
         model_->insertColumns(minIdx, 1);
         modified();
     }
-    setSpans();
     renameColumns();
-    modified();
+    beautify();
 }
 
 void AsmCodePage::insertColumnRight()
@@ -229,12 +232,11 @@ void AsmCodePage::insertColumnRight()
         }
     }
     if (maxIdx != -1) {
+        beforeModification();
         model_->insertColumns(maxIdx + 1, 1);
-        modified();
     }
-    setSpans();
     renameColumns();
-    modified();
+    beautify();
 }
 
 void AsmCodePage::deleteRows()
@@ -251,6 +253,7 @@ void AsmCodePage::deleteRows()
         }
     }
     if (min != -1 && max != -1) {
+        beforeModification();
         model_->removeRows(min, max-min+1);
     }
 
@@ -272,6 +275,7 @@ void AsmCodePage::deleteColumns()
     }
 
     if (min != -1 && max != -1) {
+        beforeModification();
         model_->removeColumns(min, max-min+1);
     }
 
@@ -322,6 +326,8 @@ void AsmCodePage::paste()
             minCol = index.column();
         }
     }
+    beforeModification();
+    disconnect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
     for (auto& item : copiedItems_) {
         while (item.row + minRow >= model_->rowCount()) {
             model_->insertRow(model_->rowCount());
@@ -332,18 +338,63 @@ void AsmCodePage::paste()
         auto index = model_->index(item.row + minRow, item.column + minCol);
         model_->setData(index, item.content);
     }
+    QWidget::connect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
     beautify();
     modified();
 }
 
 void AsmCodePage::clear()
 {
+    beforeModification();
+    disconnect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
     QModelIndexList list = this->selectionModel()->selectedIndexes();
     for (auto& index : list) {
         model_->setData(index, "");
     }
+    QWidget::connect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
     beautify();
     modified();
+}
+
+void AsmCodePage::undo()
+{
+    if (undoStack_.size() > 0) {
+        AsmCodeModel* oldState = undoStack_.back();
+        undoStack_.pop_back();
+        redoStack_.push_back(model_);
+        model_ = oldState;
+        setModel(model_);
+        QWidget::connect(model_, SIGNAL(cellChanged(int, int)), this, SLOT(on_cellChanged(int, int)));
+        QWidget::connect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
+        beautify();
+    }
+}
+
+void AsmCodePage::redo()
+{
+    if (redoStack_.size() > 0) {
+        AsmCodeModel* oldState = redoStack_.back();
+        redoStack_.pop_back();
+        undoStack_.push_back(model_);
+        model_ = oldState;
+        setModel(model_);
+        QWidget::connect(model_, SIGNAL(cellChanged(int, int)), this, SLOT(on_cellChanged(int, int)));
+        QWidget::connect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
+        beautify();
+    }
+}
+
+void AsmCodePage::beforeModification()
+{
+    // Clear redoStack_ when new modification happens.
+    for(auto* p : redoStack_) {
+        delete p;
+    }
+    redoStack_.clear();
+
+    // Push old state to undoStack_.
+    AsmCodeModel* oldState = new AsmCodeModel(model_, this);
+    undoStack_.push_back(oldState);
 }
 
 

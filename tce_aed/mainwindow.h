@@ -60,6 +60,10 @@ private slots:
 
     void on_actionClear_triggered();
 
+    void on_actionUndo_triggered();
+
+    void on_actionRedo_triggered();
+
 private:
     Ui::MainWindow *ui;
     Project* project_;

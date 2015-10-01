@@ -216,3 +216,13 @@ void MainWindow::on_actionClear_triggered()
 {
     asmCodePage_->clear();
 }
+
+void MainWindow::on_actionUndo_triggered()
+{
+    asmCodePage_->undo();
+}
+
+void MainWindow::on_actionRedo_triggered()
+{
+    asmCodePage_->redo();
+}

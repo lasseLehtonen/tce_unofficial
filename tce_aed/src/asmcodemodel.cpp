@@ -15,6 +15,12 @@ AsmCodeModel::AsmCodeModel(int rows, int columns, QObject *parent) : QAbstractTa
     cellSourceWidths_ = sourceLengths();
 }
 
+AsmCodeModel::AsmCodeModel(AsmCodeModel *model, QObject *parent) : QAbstractTableModel(parent)
+{
+    slots_ = model->slots_;
+    cellSourceWidths_ = model->cellSourceWidths_;
+}
+
 int AsmCodeModel::rowCount(const QModelIndex &parent) const
 {
     return slots_.size();
@@ -46,6 +52,7 @@ QVariant AsmCodeModel::data(const QModelIndex &index, int role) const
 
 bool AsmCodeModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {    
+    beforeChange();
     int row = index.row();
     int col  = index.column();    
     slots_.at(row).at(col).setData(value.toString());

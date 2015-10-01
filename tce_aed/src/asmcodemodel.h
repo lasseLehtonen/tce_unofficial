@@ -17,6 +17,8 @@ public:
 public:
     AsmCodeModel(QObject* parent);
     AsmCodeModel(int rows, int columns, QObject* parent);
+    AsmCodeModel(AsmCodeModel* model, QObject* parent);
+
 
     int rowCount(const QModelIndex & parent = QModelIndex()) const;
     int columnCount(const QModelIndex & parent = QModelIndex()) const;
@@ -40,6 +42,7 @@ public:
 
 signals:
     void cellChanged(int row, int column);
+    void beforeChange(void);
 
 public slots:
     void dataChange(const QModelIndex &index);
