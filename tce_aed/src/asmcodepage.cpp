@@ -1,6 +1,7 @@
 #include "asmcodepage.h"
 #include <QDebug>
 #include <QFile>
+#include <QHeaderView>
 
 AsmCodePage::AsmCodePage(QWidget *parent) : QTableView(parent)
 {
@@ -28,7 +29,6 @@ void AsmCodePage::createNew()
     model_->setData(model_->index(2, 0), ":procedure main;");
     model_->setData(model_->index(3, 0), "main:");
     model_->beautify();
-    renameColumns();
     QWidget::connect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
 }
 
@@ -88,7 +88,6 @@ bool AsmCodePage::loadFile(QString fileName)
         rows++;
     }
     beautify();
-    renameColumns();
 
     QWidget::connect(model_, SIGNAL(beforeChange()), this, SLOT(beforeModification()));
     return true;
@@ -218,7 +217,6 @@ void AsmCodePage::insertColumnLeft()
         model_->insertColumns(minIdx, 1);
         modified();
     }
-    renameColumns();
     beautify();
 }
 
@@ -235,7 +233,6 @@ void AsmCodePage::insertColumnRight()
         beforeModification();
         model_->insertColumns(maxIdx + 1, 1);
     }
-    renameColumns();
     beautify();
 }
 
@@ -281,7 +278,6 @@ void AsmCodePage::deleteColumns()
 
     setSpans();
     modified();
-    renameColumns();
 }
 
 void AsmCodePage::copy()
@@ -408,15 +404,6 @@ void AsmCodePage::on_cellChanged(int row, int col)
     }
     this->resizeColumnToContents(col);
     modified();
-}
-
-void AsmCodePage::renameColumns()
-{
-    model_->setHeaderData(0, Qt::Orientation::Horizontal, "");
-    for(int c = 1; c < model_->columnCount(); ++c) {
-        model_->setHeaderData(c, Qt::Orientation::Horizontal, "Bus " + QString::number(c));
-    }
-
 }
 
 void AsmCodePage::setSpans()

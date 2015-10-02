@@ -52,7 +52,6 @@ private:
     };
 
 private:
-    void renameColumns(void);
     void setSpans(void);
 
     AsmCodeModel* model_;

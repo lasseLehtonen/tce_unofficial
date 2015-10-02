@@ -35,6 +35,7 @@ public:
     CodeType type(const QModelIndex& index) const;
     QString source(const QModelIndex& index) const;
     QString destination(const QModelIndex& index) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
     int columnLength(int column) const;
     std::vector<int> sourceLengths(void) const;

@@ -132,6 +132,18 @@ QString AsmCodeModel::destination(const QModelIndex &index) const
     return slots_.at(index.row()).at(index.column()).destination();
 }
 
+QVariant AsmCodeModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
+        if (section == 0) {
+            return QString("Labels");
+        } else {
+            return QString("Bus ") + QString::number(section);
+        }
+    }
+    return QAbstractTableModel::headerData(section, orientation, role);
+}
+
 int AsmCodeModel::columnLength(int column) const
 {
     std::vector<int> sourceWidths = sourceLengths();
