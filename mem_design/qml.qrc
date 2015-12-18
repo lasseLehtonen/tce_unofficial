@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Definition.qml</file>
+        <file>Blocks.qml</file>
+    </qresource>
+</RCC>
