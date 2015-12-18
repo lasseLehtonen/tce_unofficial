@@ -2,23 +2,20 @@ import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.0
+import QtQuick.Window 2.0
 
 ApplicationWindow {
     visible: true
-    width: 640
-    height: 480
+    width: Screen.width
+    height: Screen.height
     title: qsTr("Memory Designer")
 
 
     menuBar: MenuBar {
         Menu {
-            title: qsTr("File")
+            title: qsTr("&File")
             MenuItem {
-                text: qsTr("&Save")
-                onTriggered: statusBar.text = "Save action triggered"
-            }
-            MenuItem {
-                text: qsTr("Exit")
+                text: qsTr("&Quit")
                 onTriggered: Qt.quit();
             }
         }
@@ -27,17 +24,22 @@ ApplicationWindow {
     TabView {
         id: tabContent
         anchors.fill: parent
-        Layout.minimumHeight: 100
-        Layout.minimumWidth: 100
+        Layout.minimumHeight: 800
+        Layout.minimumWidth: 600
 
         Tab{
-            title: "New Definition"
-            Definition {}
+            title: "New Memory"
+            NewMemory {}
         }
 
         Tab{
-            title: "Available Blocks"
+            title: "Select Blocks"
             Blocks {}
+        }
+
+        Tab {
+            title: "New Block"
+            NewBlock {}
         }
     }
 

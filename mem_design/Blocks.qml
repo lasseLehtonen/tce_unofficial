@@ -25,38 +25,6 @@ ColumnLayout {
         }
     }
 
-    GroupBox {
-        title: "New Memory Block"
-        width: parent.width
-        Layout.fillWidth: true
-        Layout.alignment: Qt.AlignRight
 
-        RowLayout {
-            Layout.alignment: Qt.AlignRight
-            Layout.fillWidth: true
-
-            Label {text: "width"}
-            TextField {
-                id: blockWidth
-                text: "1"
-                validator: IntValidator {bottom: 1;}
-                Layout.alignment: Qt.AlignVCenter
-            }
-            Label {text: "depth"}
-            TextField {
-                id: blockDepth
-                text: "1"
-                validator: IntValidator {bottom: 1;}
-                Layout.alignment: Qt.AlignVCenter
-            }
-            Button {
-                text: "Add"
-                onClicked: {
-                    console.log("Block to add w", blockWidth.text, " d", blockDepth.text)
-                }
-            }
-
-        }
-    }
 }
 

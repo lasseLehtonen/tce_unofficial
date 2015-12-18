@@ -1,7 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>Definition.qml</file>
+        <file>NewMemory.qml</file>
         <file>Blocks.qml</file>
+        <file>NewBlock.qml</file>
     </qresource>
 </RCC>
