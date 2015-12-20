@@ -8,12 +8,52 @@ ApplicationWindow {
     visible: true
     width: Screen.width
     height: Screen.height
-    title: qsTr("Memory Designer")
+    title: "Memory Designer " + MemoryModel.saveFile
+
+    FileDialog {
+        id: fileOpenDialog
+        title: "Please choose a file to open"
+        nameFilters: [ "Memory database (*.mdb)", "All files (*)"]
+        selectExisting: true
+        onAccepted: {
+            MemoryModel.open( fileOpenDialog.fileUrl )
+            fileOpenDialog.close()
+        }
+        onRejected: {
+            fileOpenDialog.close()
+        }
+    }
+
+    FileDialog {
+        id: fileSaveAsDialog
+        selectExisting: false
+        title: "Please choose a file to Save as"
+        nameFilters: [ "Memory database (*.mdb)", "All files (*)"]
+        onAccepted: {
+            var f = fileSaveAsDialog.fileUrl
+            MemoryModel.saveAs( f )
+            fileSaveAsDialog.close()
+        }
+        onRejected: {
+            fileSaveAsDialog.close()
+        }
+    }
 
 
     menuBar: MenuBar {
         Menu {
             title: qsTr("&File")
+            MenuItem {
+                text: qsTr("&Open")
+                onTriggered: fileOpenDialog.open();
+            }
+            MenuItem {
+                text: qsTr("&Save")
+            }
+            MenuItem {
+                text: qsTr("&Save as")
+                onTriggered: fileSaveAsDialog.open();
+            }
             MenuItem {
                 text: qsTr("&Quit")
                 onTriggered: Qt.quit();

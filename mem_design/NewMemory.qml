@@ -169,6 +169,13 @@ ColumnLayout {
     Button {
         Layout.alignment: Qt.AlignRight
         text: "Generate"
-        onClicked: statusBar.text =  "Generate clicked"
+        onClicked: {
+            MemoryModel.setOption("fileName", fileName.text)
+            MemoryModel.setOption("addrWidth", addrWidth.text)
+            MemoryModel.setOption("memWidth", memWidth.text)
+            MemoryModel.setOption("memDepth", memDepth.text)
+            MemoryModel.setOption("ffBreakEven", ffBreakEven.text)
+            statusBar.text =  "Generate clicked"
+        }
     }
 }

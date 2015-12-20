@@ -18,13 +18,36 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        TextArea {
+        TableView {
             anchors.fill: parent
-            text: ""
-            readOnly: true
+
+            model: MemoryModel
+
+            TableViewColumn {
+                role: "name"
+                title: "Name"
+                width: parent.width * 0.10
+            }
+
+            TableViewColumn {
+                role: "depth"
+                title: "Depth"
+                width: parent.width * 0.05
+            }
+
+            TableViewColumn {
+                role: "width"
+                title: "Width"
+                width: parent.width * 0.05
+            }
+
+            TableViewColumn {
+                role: "type"
+                title: "Type"
+                width: parent.width * 0.10
+            }
+
         }
     }
-
-
 }
 

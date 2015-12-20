@@ -24,6 +24,7 @@ ColumnLayout {
             Layout.fillWidth: true
 
             TextArea {
+                id: component
                 font.family: "Courier"
                 anchors.fill: parent
                 Layout.fillHeight: true
@@ -48,6 +49,7 @@ ColumnLayout {
             Layout.fillWidth: true
 
             TextArea {
+                id: instance
                 font.family: "Courier"
                 anchors.fill: parent
                 Layout.fillHeight: true
@@ -85,7 +87,10 @@ ColumnLayout {
     Button {
         Layout.alignment: Qt.AlignRight
         text: "Add Block"
-        onClicked: statusBar.text =  "Add Block clicked"
+        onClicked: {
+            statusBar.text =  "Add Block clicked"
+            MemoryModel.addBlock(component.text, instance.text)
+        }
     }
 
 }
