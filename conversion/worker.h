@@ -19,11 +19,15 @@ signals:
 
 public slots:
     void droppedText(QString dt);
-    void convert(qint64 src, qint64 dst, qint64 bits1, qint64 bits2, qint64 bits3, QString text);
+    void convert(qint64 src, qint64 dst, qint64 dstBits1, qint64 dstBits2, qint64 dstVectorization, qint64 srcBits1, qint64 srcBits2, qint64 srcVectorization, QString text);
 
 private:
     QString floatToBin(QString f, qint64 e, qint64 m);
     QString floatToFixed(QString f, qint64 e, qint64 m);
+    QString bitsToFloat(QString f, qint64 e, qint64 m);
+    QString bitsToFixed(QString f, qint64 e, qint64 m);
+
+    qint64 bitsToInt(QString s);
     QString text_;
 };
 

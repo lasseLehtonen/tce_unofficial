@@ -24,7 +24,7 @@ ApplicationWindow {
             ToolButton {
                 tooltip: "Convert"
                 iconSource: "beautify.png"
-                onClicked: Engine.convert(srcFormat.currentIndex, targetFormat.currentIndex, spin1.value, spin2.value, spin3.value, srcText.text)
+                onClicked: Engine.convert(srcFormat.currentIndex, targetFormat.currentIndex, tspin1.value, tspin2.value, tspin3.value, spin1.value, spin2.value, spin3.value, srcText.text)
             }
             Item { Layout.fillWidth: true }
             /*CheckBox {
@@ -35,121 +35,173 @@ ApplicationWindow {
         }
     }
 
-    SplitView {
-        id: root
+    ColumnLayout {
         anchors.fill: parent
-        orientation: Qt.Horizontal
 
         GroupBox {
-            id: src
-            title: "Source"
-            width: root.width / 2
+            title: "Source options"
 
-            ColumnLayout {
-                anchors.fill: parent
+            RowLayout {
 
                 ComboBox {
                     id: srcFormat
                     width: 200
-                    model: [ "Float" ]
-                }
-
-                TextArea {
-                    id:srcText
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-
-                    Connections {
-                        target: Engine
-                        onTextUpdated: {
-                            srcText.text = text
-                        }
-                    }
-
-                    DropArea {
-                        anchors.fill: parent
-                        onDropped: {
-                            Engine.droppedText(drop.text)
+                    model: [ "Float (float)", "Float (binary)", "Fixed (binary)" ]
+                    onActivated: {
+                        if (index < 2) {
+                            label1.text = "Exp bits"
+                        } else {
+                            label1.text = "Mag bits"
                         }
                     }
                 }
 
+                Label {
+                    id: label1
+                    text: "Exp bits"
+                }
+
+                SpinBox {
+                    id: spin1
+                    minimumValue: 0
+                }
+
+                Label {
+                    id: label2
+                    text: "Frac bits"
+                }
+
+                SpinBox {
+                    id: spin2
+                    minimumValue: 0
+                }
+
+                Label {
+                    id: label3
+                    text: "Vectorization"
+                }
+
+                SpinBox {
+                    id: spin3
+                    minimumValue: 1
+                }
             }
         }
 
         GroupBox {
-            id: target
-            title: "Target"
-            width: root.width / 2
-            height: root.height
+            title: "Target options"
 
-            ColumnLayout {
-                anchors.fill: parent
+            RowLayout {
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    ComboBox {
-                        id: targetFormat
-                        width: 200
-                        model: [ "Float", "Fixed" ]
-                        onActivated: {
-                            console.log(currentText)
-                            if (currentText === "Float") {
-                                label1.text = "Exp bits"
-                            } else {
-                                label1.text = "Mag bits"
+                ComboBox {
+                    id: targetFormat
+                    width: 200
+                    model: [ "Float", "Fixed"]
+                    onActivated: {
+                        if (index === 0) {
+                            tlabel1.text = "Exp bits"
+                        } else {
+                            tlabel1.text = "Mag bits"
+                        }
+                    }
+                }
+
+                Label {
+                    id: tlabel1
+                    text: "Exp bits"
+                }
+
+                SpinBox {
+                    id: tspin1
+                    minimumValue: 0
+                }
+
+                Label {
+                    id: tlabel2
+                    text: "Frac bits"
+                }
+
+                SpinBox {
+                    id: tspin2
+                    minimumValue: 0
+                }
+
+                Label {
+                    id: tlabel3
+                    text: "Vectorization"
+                }
+
+                SpinBox {
+                    id: tspin3
+                    minimumValue: 1
+                }
+            }
+        }
+
+        SplitView {
+            id: root
+            orientation: Qt.Horizontal
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
+            GroupBox {
+                id: src
+                title: "Source"
+                width: root.width / 2
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    TextArea {
+                        id:srcText
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+
+                        Connections {
+                            target: Engine
+                            onTextUpdated: {
+                                srcText.text = text
+                            }
+                        }
+
+                        DropArea {
+                            anchors.fill: parent
+                            onDropped: {
+                                Engine.droppedText(drop.text)
                             }
                         }
                     }
 
-                    Label {
-                        id: label1
-                        text: "Exp bits"
-                    }
-
-                    SpinBox {
-                        id: spin1
-                        minimumValue: 0
-                    }
-
-                    Label {
-                        id: label2
-                        text: "Frac bits"
-                    }
-
-                    SpinBox {
-                        id: spin2
-                        minimumValue: 0
-                    }
-
-                    Label {
-                        id: label3
-                        text: "Vectorization"
-                    }
-
-                    SpinBox {
-                        id: spin3
-                        minimumValue: 1
-                    }
                 }
+            }
 
-                TextArea {
-                    id: dstText
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    readOnly: true
+            GroupBox {
+                id: target
+                title: "Target"
+                width: root.width / 2
+                height: root.height
 
-                    Connections {
-                        target: Engine
-                        onConverted: {
-                            dstText.text = text
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    TextArea {
+                        id: dstText
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        readOnly: true
+
+                        Connections {
+                            target: Engine
+                            onConverted: {
+                                dstText.text = text
+                            }
                         }
                     }
+
                 }
-
             }
+
         }
+
     }
-
 }
-

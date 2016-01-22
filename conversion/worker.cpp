@@ -26,43 +26,54 @@ void Worker::droppedText(QString dt)
 
 }
 
-void Worker::convert(qint64 src, qint64 dst, qint64 bits1, qint64 bits2, qint64 bits3, QString text)
+void Worker::convert(qint64 src, qint64 dst,
+                     qint64 dstBits1, qint64 dstBits2, qint64 dstVectorization,
+                     qint64 srcBits1, qint64 srcBits2, qint64 srcVectorization,
+                     QString text)
 {
-    qDebug() << src << dst << bits1 << bits2 << bits3 << text;
+    qDebug() << src << dst << dstBits1 << dstBits2 << dstVectorization << text;
+
+
+    int splice;
+
 
     QStringList ls = text.split(QRegExp("\\s"),QString::SkipEmptyParts);
     QStringList result;
 
-    switch (src) {
-    case 0: {
-        if ( dst == 0) {
-            for (auto s : ls) {
-                result << floatToBin(s, bits1, bits2);
-            }
-        } else {
-            for (auto s : ls) {
-                result << floatToFixed(s, bits1, bits2);
-            }
+    if (src == 0 && dst == 0) {
+        for (auto s : ls) {
+            result << floatToBin(s, dstBits1, dstBits2);
         }
-        break;
     }
-    case 1: {
-        break;
+
+    if (src == 0 && dst == 1) {
+        for (auto s : ls) {
+            result << floatToFixed(s, dstBits1, dstBits2);
+        }
     }
-    case 2: {
-        break;
+
+    if (src == 1 && dst == 0) {
+        for (auto s : ls) {
+            splice = s.size() / srcVectorization;
+
+            for (int i = 0; i < srcVectorization; ++i)
+                result << bitsToFloat(s.mid(i*splice, splice), srcBits1, srcBits2);
+        }
     }
-    default: {
-        qDebug() << "error: Default reached";
-        return;
+
+    if (src == 2 && dst == 0) {
+        for (auto s : ls) {
+            result << bitsToFixed(s, srcBits1, srcBits2);
+        }
     }
-    }
+
+
 
     QString retval;
     int cnt = 0;
     for (auto s : result) {
         retval += s; cnt++;
-        if (cnt >= bits3) {
+        if (cnt >= dstVectorization) {
             retval += "\r\n";
             cnt = 0;
         }
@@ -180,6 +191,56 @@ QString Worker::floatToFixed(QString f, qint64 e, qint64 m)
             }
         }
 
+    }
+    return retval;
+}
+
+QString Worker::bitsToFloat(QString f, qint64 e, qint64 m)
+{
+    if (f.size() != 1+e+m) {
+        qDebug() << "String size doesn't match the amount of bits in exponent and mantissa"
+                 << f << 1+e+m;
+        return "FAIL";
+    }
+
+    double sign = f.at(0) == '0' ? 1 : -1;
+
+    if (bitsToInt(f.right(e+m)) == 0) {
+        return "0";
+    }
+
+    qint64 exp = bitsToInt(f.mid(1, e)) - (exp2(e-1)-1);
+    double man = bitsToInt("1" + f.right(m)) * (1/exp2(m));
+
+    qDebug() << sign << exp << man;
+
+    while(exp < 0) {
+        man /= 2;
+        exp++;
+    }
+    while(exp > 0) {
+        man *= 2;
+        exp--;
+    }
+
+    return QString::number(sign * man);
+}
+
+QString Worker::bitsToFixed(QString f, qint64 e, qint64 m)
+{
+
+}
+
+qint64 Worker::bitsToInt(QString s)
+{
+    qint64 retval = 0;
+    qint64 exp = 1;
+
+    for (int i = s.size()-1; i >= 0; --i) {
+        if (s.at(i) == '1') {
+            retval += exp;
+        }
+        exp <<= 1;
     }
     return retval;
 }
