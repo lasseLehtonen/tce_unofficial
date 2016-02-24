@@ -3,5 +3,20 @@
         <file>main.qml</file>
         <file>icons/save.png</file>
         <file>icons/screen_shot.png</file>
+        <file>ClockCycle.qml</file>
+        <file>ColorTab.qml</file>
+        <file>SizeTab.qml</file>
+        <file>FontTab.qml</file>
+        <file>GenerateTab.qml</file>
+        <file>ClockSignal.qml</file>
+        <file>ResetSignal.qml</file>
+        <file>HiCycle.qml</file>
+        <file>LoCycle.qml</file>
+        <file>LoHiCycle.qml</file>
+        <file>GenericSignal.qml</file>
+        <file>GenericCycle.qml</file>
+        <file>HiLoCycle.qml</file>
+        <file>BusCycle.qml</file>
+        <file>BusChangeCycle.qml</file>
     </qresource>
 </RCC>

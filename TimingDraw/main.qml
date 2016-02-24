@@ -10,6 +10,7 @@ ApplicationWindow {
     height: 480
     title: qsTr("TimingDraw Extra-Pro v42")
 
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -30,7 +31,7 @@ ApplicationWindow {
                     text: "&Screenshot"
                     shortcut: "Ctrl+s"
                     onTriggered: {
-                        core.grabToImage(function(result) {
+                        actualContent.grabToImage(function(result) {
                             result.saveToFile("capture.png")
                             console.log("Screenshot taken")
                         })
@@ -38,8 +39,19 @@ ApplicationWindow {
 
                     tooltip: "Take screenshot"
                 }
-                onClicked: {
+            }
+            ToolButton {
+                iconSource: "icons/screen_shot.png"
+                action: Action {
+                    id: addSignal
+                    text: "addSignal"
+                    shortcut: ""
+                    onTriggered: {
+                        printed.signals += 1
+                        console.log("add Signal", printed.signals)
+                    }
 
+                    tooltip: "Add Signal"
                 }
             }
             Item { Layout.fillWidth: true }
@@ -47,33 +59,89 @@ ApplicationWindow {
     }
 
     Rectangle {
-        id: core
         anchors.fill: parent
-        color: "black"
+        anchors.margins: 10
+        color: "transparent"
 
-        Row {
-            id: clockrow
-            y: parent.height * 0.10
+        TabView {
+            id: options
             width: parent.width
-            height: parent.height / 10
+            Tab {
+                title: "Generate"
+                GenerateTab {}
+            }
 
-            Repeater {
-                model: 10
-
-                Rectangle {
-                    width: clockrow.width /12
-                    height: clockrow.height
-                    color: "transparent"
-                    border.width: 1
-                    border.color: "red"
-                }
+            Tab {
+                title: "Colors"
+                ColorTab {}
+            }
+            Tab {
+                title: "Sizes"
+                SizeTab {}
+            }
+            Tab {
+                title: "Fonts"
+                FontTab {}
             }
         }
 
-        Text {
-            anchors.centerIn: parent
-            text: "Fuck yeah"
-            color: "green"
+        Rectangle {
+            id: printed
+            anchors.top: options.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.topMargin: 10
+            color: "transparent"
+            border.color: "red"
+            border.width: 1
+
+            property color color_bg: "#ffffff"
+            property color color_text: "#000000"
+            property color color_signal: "#000000"
+            property real signalHeight: 50
+            property int cycleWidth: 100
+            property int trailingWidth: 0
+            property real signalTextWidth: 100
+            property string fontFamily: "Courier"
+            property int fontPixelSize: 16
+            property string valueFontFamily: "Courier"
+            property int valueFontPixelSize: 16
+            property int clockCycles: 2
+            property int signalWidth: 2
+            property int valueLeftMargin: 50
+            property int globalMargin: 10
+            property int signals: 0
+
+            signal redraw
+
+            Flickable {
+                anchors.fill: parent
+                anchors.margins: parent.border.width
+                contentHeight: actualContent.height
+                contentWidth: actualContent.width
+                clip: true
+
+                Rectangle {
+                    id: actualContent
+                    width: actualLayout.width + 2*printed.globalMargin
+                    height: actualLayout.height + 2*printed.globalMargin
+                    color: printed.color_bg
+                    clip: true
+                    ColumnLayout {
+                        id: actualLayout
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        spacing: 10
+                        ClockSignal {}
+                        ResetSignal {id: resetSignal; visible: false}
+                        Repeater {
+                            model: printed.signals
+                            GenericSignal { row_id: index }
+                        }
+                    }
+                }
+            }
         }
     }
 }
