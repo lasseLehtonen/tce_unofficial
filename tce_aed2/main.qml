@@ -5,6 +5,7 @@ import QtQuick.Window 2.0
 import QtQuick.Layouts 1.1
 
 ApplicationWindow {
+    id: window
     visible: true
     width: Screen.width / 2
     height: Screen.height / 2
@@ -102,6 +103,12 @@ ApplicationWindow {
 
     TabView {
         anchors.fill: parent
+        Tab {
+            id: properties
+            title: "Properties"
+            PropertyEditor {}
+
+        }
         Tab {
             id: asmEditor
             title: "Assembly Editor"

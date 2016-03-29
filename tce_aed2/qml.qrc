@@ -15,5 +15,6 @@
         <file>AsmEditor.qml</file>
         <file>SlotEditor.qml</file>
         <file>icons/generate.png</file>
+        <file>PropertyEditor.qml</file>
     </qresource>
 </RCC>

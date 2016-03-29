@@ -1,6 +1,7 @@
 #include "codemodel.h"
 #include <QByteArray>
 #include <cmath>
+#include <iostream>
 
 CodeModel::CodeModel() :
     currentRow_(0),
@@ -86,6 +87,17 @@ void CodeModel::paste()
 void CodeModel::save()
 {
     qDebug() << "Save()" << rows() << "x" << columns();
+    for (int y = 1; y <= rows(); ++y) {
+        for (int x = 1; x <= columns(); ++x) {
+            auto iter = code_.find(QPair<int, int>(y, x));
+            if (iter != code_.end()) {
+                std::cout << iter->asString().toStdString() << " ";
+            } else {
+                std::cout << "... ";
+            }
+        }
+        std::cout << std::endl;
+    }
 }
 
 void CodeModel::updateCodeWidth()

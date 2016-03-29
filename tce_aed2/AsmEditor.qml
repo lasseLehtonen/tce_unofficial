@@ -7,8 +7,8 @@ import QtQuick.Layouts 1.1
 
 ScrollView {
     anchors.fill: parent
-    verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
-    horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOn
+    verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
+    horizontalScrollBarPolicy: Qt.ScrollBarAsNeeded
 
     Flickable {
         anchors.fill: parent
