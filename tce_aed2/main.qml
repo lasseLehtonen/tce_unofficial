@@ -68,10 +68,12 @@ ApplicationWindow {
             }
             ToolButton {
                 iconSource: "icons/insert_row_left.png"
+                tooltip: "Add column left"
                 onClicked: CodeModel.addColumnLeft()
             }
             ToolButton {
                 iconSource: "icons/insert_row_right.png"
+                tooltip: "Add column right"
                 onClicked: CodeModel.addColumnRight()
             }
             ToolButton {
@@ -79,14 +81,20 @@ ApplicationWindow {
             }
             ToolButton {
                 iconSource: "icons/inesrt_column_below.png"
+                tooltip: "add row below"
                 onClicked: CodeModel.addRowBelow()
             }
             ToolButton {
                 iconSource: "icons/insert_column_above.png"
+                tooltip: "Add row above"
                 onClicked: CodeModel.addRowAbove()
             }
             ToolButton {
                 iconSource: "icons/delete_column.png"
+            }
+            ToolButton {
+                iconSource: "icons/generate.png"
+                onClicked: CodeModel.generate()
             }
             Item { Layout.fillWidth: true }
         }

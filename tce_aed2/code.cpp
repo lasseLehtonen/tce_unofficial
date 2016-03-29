@@ -1,5 +1,6 @@
 #include "code.h"
 #include <QByteArray>
+#include <QRegularExpression>
 
 Code::Code() : type_(TYPE::Empty), padding_(0)
 {
@@ -9,114 +10,43 @@ Code::Code() : type_(TYPE::Empty), padding_(0)
 void Code::code(QString code)
 {
     code = code.trimmed();
-    outOperation_ = "";
-    if (code.isEmpty()) {
-        type_ = TYPE::Empty;
+    code = code.simplified();
+    code.replace("  ", " ");
+    //qDebug() << "simplified code" << code;
+
+    QRegularExpression portMoveRE("^([a-z][a-z0-9]*)[.]([a-z0-9]+) -> ([a-z][a-z0-9]*)[.]([a-z_0-9]+)$", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression trigMoveRE("^[a-z][a-z0-9]*[.][a-z0-9]* -> [a-z][a-z0-9]*[.][a-z][a-z0-9]*[.][a-z][a-z_0-9]*$", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression guardedPortMoveRE("^[!?][a-z][a-z0-9]*[.][a-z0-9]* [a-z][a-z0-9]*[.][a-z0-9]* -> [a-z][a-z0-9]*[.][a-z_0-9]+$", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression guardedTrigMoveRE("^[!?][a-z][a-z0-9]*[.][a-z0-9]* [a-z][a-z0-9]*[.][a-z0-9]* -> [a-z][a-z0-9]*[.][a-z][a-z0-9]*[.][a-z][a-z_0-9]*$", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression immPortMoveRE("^[1-9][0-9]* -> [a-z][a-z0-9]*[.][a-z_0-9]+$", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression immTrigMoveRE("^[1-9][0-9]* -> [a-z][a-z0-9]*[.][a-z][a-z0-9]*[.][a-z][a-z_0-9]*$", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression guardedImmPortMoveRE("^[!?][a-z][a-z0-9]*[.][a-z0-9]* [1-9][0-9]* -> [a-z][a-z0-9]*[.][a-z_0-9]+$", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression guardedImmTrigMoveRE("^[!?][a-z][a-z0-9]*[.][a-z0-9]* [1-9][0-9]* -> [a-z][a-z0-9]*[.][a-z][a-z0-9]*[.][a-z][a-z_0-9]*$", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression labelRE("^[a-z][a-z_0-9]*:$", QRegularExpression::CaseInsensitiveOption);
+
+    QRegularExpressionMatch match;
+
+    match = portMoveRE.match(code);
+    if (match.hasMatch()) {
+        type_ = TYPE::PortMove;
+        inFu_ = match.captured(1);
+        inport_ = match.captured(2);
+        outFu_ = match.captured(3);
+        outport_ = match.captured(4);
         return;
     }
 
-    if (!code.contains("->")) {
-        type_ = TYPE::Comment;
-        comment_ = code;
-        return;
-    }
+    qDebug() << "            trigmove match" << trigMoveRE.match(code).hasMatch();
+    qDebug() << "guarded     portmove match" << guardedPortMoveRE.match(code).hasMatch();
+    qDebug() << "guarded     trigmove match" << guardedTrigMoveRE.match(code).hasMatch();
+    qDebug() << "        imm portmove match" << immPortMoveRE.match(code).hasMatch();
+    qDebug() << "        imm trigmove match" << immTrigMoveRE.match(code).hasMatch();
+    qDebug() << "guarded imm portmove match" << guardedImmPortMoveRE.match(code).hasMatch();
+    qDebug() << "guarded imm trigmove match" << guardedImmTrigMoveRE.match(code).hasMatch();
+    qDebug() << "               label match" << labelRE.match(code).hasMatch();
 
-    int index = code.indexOf("->");
-    if (index < 0) {
-        qDebug() << "Error finding '->'";
-        return;
-    }
-
-    if ((index == 0) || (code.size()-(index+2) < 1)) {
-        type_ = TYPE::Comment;
-        comment_ = code;
-        return;
-    }
-
-    QString left = code.left(index).trimmed();
-    QString right = code.right(code.size()-(index+2)).trimmed();
-
-    qDebug() << left << "->" << right;
-    bool isComment = false;
-
-    bool guarded = false;
-    if (left.startsWith('!') || left.startsWith('?')) {
-        guarded = true;
-        guard_ = left.at(0);
-        left = left.right(left.size()-1).trimmed();
-        index = left.indexOf(".");
-    }
-
-    if (guarded && index > 0) {
-        guardFu_ = left.left(index);
-        left = left.right(left.size()-1-index).trimmed();
-        index = left.indexOf(" ");
-    } else {
-        isComment = guarded;
-        guarded = false;
-    }
-
-    if (guarded && index > 0) {
-        guardPort_ = left.left(index);
-        left = left.right(left.size()-1-index).trimmed();
-    } else {
-        isComment = guarded;
-        guarded = false;
-    }
-
-    if (!isComment) {
-        index = left.indexOf(".");
-        if (index > 0 && left.size() > index + 1) {
-            inFu_ = left.left(index);
-            inport_ = left.right(left.size()-1-index);
-        } else {
-            isComment = true;
-        }
-    }
-
-    if (!isComment) {
-        index = right.indexOf(".");
-        if (index > 0) {
-            outFu_ = right.left(index);
-            right = right.right(right.size()-1-index);
-        } else {
-            isComment = true;
-        }
-    }
-
-    if (!isComment) {
-        index = right.indexOf(".");
-        if (index > 0) {
-            outport_ = right.left(index);
-            outOperation_ = right.right(right.size()-1-index);
-        } else {
-            outport_ = right;
-        }
-    }
-
-
-    if (isComment) {
-        type_ = TYPE::Comment;
-        comment_ = code;
-        return;
-    }
-
-    if (guarded) {
-        if(outOperation_.size() == 0) {
-            type_ = TYPE::GuardedPortMove;
-        } else {
-            type_ = TYPE::GuardedTriggeringMove;
-        }
-        return;
-    } else {
-        if(outOperation_.size() == 0) {
-            type_ = TYPE::PortMove;
-        } else {
-            type_ = TYPE::TriggeringMove;
-        }
-        return;
-    }
-    //qDebug() << guard_ << guardFu_ << guardPort_ << inFu_ << inport_ << outFu_ << outport_ << outOperation_;
+    type_ = TYPE::Unkown;
+    unkown_ = code;
 }
 
 QString Code::asString() const
@@ -135,7 +65,21 @@ QString Code::asString() const
     case TYPE::GuardedPortMove:
         return guard_ + guardFu_ + "." + guardPort_ + " " + inFu_ + "." + inport_ + QByteArray(padding_, ' ') + " -> " + outFu_ + "." + outport_;
     default:
+        return unkown_;
         break;
+    }
+}
+
+QString Code::type() const
+{
+    switch (type_) {
+    case TYPE::Comment: return "comment";
+    case TYPE::Empty: return "empty";
+    case TYPE::GuardedPortMove: return "guarded port move";
+    case TYPE::GuardedTriggeringMove: return "guarded triggering move";
+    case TYPE::PortMove: return "port move";
+    case TYPE::TriggeringMove: return "triggering move";
+    default: qDebug() << "Code::type() error in codemodel"; return "";
     }
 }
 

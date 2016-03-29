@@ -14,5 +14,6 @@
         <file>AdfView.qml</file>
         <file>AsmEditor.qml</file>
         <file>SlotEditor.qml</file>
+        <file>icons/generate.png</file>
     </qresource>
 </RCC>

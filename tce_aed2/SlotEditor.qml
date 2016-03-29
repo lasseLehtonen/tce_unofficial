@@ -4,26 +4,35 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.0
 import QtQuick.Layouts 1.1
+import ase.sorsa.slot 1.0
 
 Rectangle {
     id: rec
-    height: textEdit.height
     width: textEdit.width
+    height: textEdit.height
+
 
     TextField {
         id: textEdit
-        text: ""
+        width: slot.width > 100 ? slot.width : 100
 
-        property bool selected: false
-        property color colorText: "#000000"
-        property color colorBg: "white"
+        Slot {
+            id: slot
+            row: xrow
+            column: xcolumn
+            selected: textEdit.activeFocus
+            width:  textEdit.__contentWidth + 10
+            model: CodeModel
+
+            onCodeChanged: { console.log("Code changed to ", code); textEdit.text = code;}
+        }
 
         style: TextFieldStyle {
-            textColor: textEdit.colorText
+            textColor: slot.selected ? "blue" : "black"
             font.family: "Courier"
             font.pointSize: 10
             background: Rectangle {
-                color: textEdit.colorBg //textEdit.selected ? "#eeeeff" : "#ffffff"
+                color: slot.selected ? "#eeeeff" : "white"
                 radius: 2
                 implicitWidth: 100
                 implicitHeight: 24
@@ -34,35 +43,12 @@ Rectangle {
 
         onDisplayTextChanged: {
             var len = (textEdit.__contentWidth / length) * (length+3)
-            CodeModel.slotWidth(xrow, xcolumn, len)
-            CodeModel.setCode(xrow, xcolumn, textEdit.text);
-            //console.log("edited ")
+            slot.width = len
+            slot.code = text
         }
-
-        onActiveFocusChanged: {
-            //console.log("active foocus", activeFocus)
-            if (activeFocus) {
-                selected = true
-                textEdit.colorText = "blue"
-                textEdit.colorBg = "#eeeeff"
-            } else {
-                selected = false
-                textEdit.colorText = "#010101"
-                textEdit.colorBg = "white"
-            }
-
-
-        }
-
-        Connections {
-            target: CodeModel
-            onColumnUpdated: {
-                if (column === xcolumn) {
-                    textEdit.width = CodeModel.columnWidth(column)
-                }
-            }
-        }
-        Component.onCompleted: text = CodeModel.code(xrow, xcolumn)
+        //onDisplayTextChanged: slot.code = text
+        onEditingFinished: { textEdit.focus = false }
+        Component.onCompleted: { text = CodeModel.code(xrow, xcolumn) }
     }
 }
 

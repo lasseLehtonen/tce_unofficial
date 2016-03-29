@@ -6,7 +6,8 @@ CONFIG += c++11
 
 SOURCES += main.cpp \
     codemodel.cpp \
-    code.cpp
+    code.cpp \
+    slot.cpp
 
 RESOURCES += qml.qrc
 
@@ -18,5 +19,6 @@ include(deployment.pri)
 
 HEADERS += \
     codemodel.h \
-    code.h
+    code.h \
+    slot.h
 

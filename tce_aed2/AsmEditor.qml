@@ -10,91 +10,113 @@ ScrollView {
     verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
     horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOn
 
-    GridLayout {
-        id: grid
-        x: 10
-        y: 10
-        width: parent.width
-        height: parent.height
+    Flickable {
+        anchors.fill: parent
+        anchors.margins: 10
+        contentHeight: grid.height
+        contentWidth: grid.width
+        clip: true
 
-        rows: CodeModel.rowCount() + 1
-        columns: CodeModel.columnCount() + 1
-        rowSpacing: 0
-        columnSpacing: 0
+        GridLayout {
+            id: grid
+            width: CodeModel.codeWidth + 20 + 40
+            height: CodeModel.codeHeight + 20 + 24
 
-        Connections {
-            target: CodeModel
-            onColumnInserted: {
-                grid.columns = CodeModel.columnCount() + 1
-                console.log("grid updated")
+            rows: CodeModel.rows + 2
+            columns: CodeModel.columns + 2
+            rowSpacing: 0
+            columnSpacing: 0
+
+            property int selX: 0
+            property int selY: 0
+
+            Component {
+                id:editor
+                SlotEditor {
+                }
             }
-            onRowInserted: {
-                grid.rows = CodeModel.rowCount() + 1
-                console.log("grid updated")
+
+
+            Component {
+                id: filler
+                Rectangle {
+                    width: 10
+                    height: 10
+                    color: "red"
+                    visible: true
+                }
             }
-            onTableWidthChanged: {
-                console.log("row width", newWidth)
-                grid.width = newWidth + 20
-            }
-        }
 
-        Component {
-            id:editor
-            SlotEditor {}
-        }
-
-
-        Component {
-            id: filler
-            Rectangle {
-                width: 0
-                height: 0
-                color: "transparent"
-            }
-        }
-
-
-        Repeater {
-            id: rowR
-            model:  CodeModel.rowCount() + 1
-            Repeater {
-                id: columnR
-                property int zrow: index
-                model: CodeModel.columnCount() + 1
-
-                Loader {
-                    sourceComponent: {
-                        if (zrow === CodeModel.rowCount()) {
-                            Layout.fillHeight =  true
-                            return filler
-                        } else if (index === CodeModel.columnCount()) {
-                            Layout.fillWidth =  true
-                            return filler
-                        } else {
-                            return editor
-                        }
+            Component {
+                id: columnHeader
+                Rectangle {
+                    width: 100
+                    height: 24
+                    color: "transparent"
+                    Text {
+                        anchors.fill: parent
+                        anchors.leftMargin: 10
+                        text: xcolumn > 1 ? "Bus " + (xcolumn-1) : "Misc"
+                        verticalAlignment: Qt.AlignVCenter
                     }
-                    property int xrow: zrow
-                    property int xcolumn: index
+                }
+            }
 
-                    Connections {
-                        target: CodeModel
-                        onColumnInserted: {
-                            console.log("columnR updated")
-                            if (xrow === 0 && xcolumn === 0) columnR.model = CodeModel.columnCount() + 1
+            Component {
+                id: rowHeader
+                Rectangle {
+                    width: 40
+                    height: 24
+                    color: "transparent"
+                    Text {
+                        anchors.fill: parent
+                        anchors.leftMargin: 10
+                        text: xrow
+                        verticalAlignment: Qt.AlignVCenter
+                    }
+                }
+            }
+
+
+            Repeater {
+                id: rowR
+                model:  CodeModel.rows + 2
+                Repeater {
+                    id: columnR
+                    property int zrow: index
+                    model: CodeModel.columns + 2
+
+                    Loader {
+                        //Component: Slot {}
+
+                        sourceComponent: {
+                            if (zrow === CodeModel.rows + 1) {
+                                Layout.fillHeight =  true
+                                return filler
+                            } else if (index === CodeModel.columns + 1) {
+                                Layout.fillWidth =  true
+                                return filler
+                            } else if (zrow === 0 && index > 0) {
+                                return columnHeader
+                            } else if (index === 0 && zrow > 0) {
+                                return rowHeader
+                            } else if (index === 0 && zrow === 0) {
+                                return filler
+                            } else {
+                                return editor
+                            }
                         }
-                        onRowInserted: {
-                            console.log("rowR updated")
-                            if (xrow === 0 && xcolumn === 0) rowR.model = CodeModel.rowCount() + 1
-                        }
+                        focus: false
+                        property int xrow: zrow
+                        property int xcolumn: index
+
+
                     }
 
                 }
-
             }
+
         }
-
-
     }
 
 }
