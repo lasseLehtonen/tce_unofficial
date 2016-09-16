@@ -7,8 +7,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    MemoryModel memoryModel;
-
+    MemoryModel memoryModel();
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("MemoryModel", &memoryModel);

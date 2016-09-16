@@ -27,6 +27,8 @@ private:
     QString bitsToFloat(QString f, qint64 e, qint64 m);
     QString bitsToFixed(QString f, qint64 e, qint64 m);
 
+    QString hexToBin(QString s);
+    QString binToHex(QString s);
     qint64 bitsToInt(QString s);
     QString text_;
 };

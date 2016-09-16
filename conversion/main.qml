@@ -46,9 +46,9 @@ ApplicationWindow {
                 ComboBox {
                     id: srcFormat
                     width: 200
-                    model: [ "Float (float)", "Float (binary)", "Fixed (binary)" ]
+                    model: [ "Float (float)", "Float (binary)", "Float (hex)", "Fixed (binary)" ]
                     onActivated: {
-                        if (index < 2) {
+                        if (index < 3) {
                             label1.text = "Exp bits"
                         } else {
                             label1.text = "Mag bits"
@@ -96,9 +96,9 @@ ApplicationWindow {
                 ComboBox {
                     id: targetFormat
                     width: 200
-                    model: [ "Float", "Fixed"]
+                    model: [ "Float", "Float (hex)", "Fixed"]
                     onActivated: {
-                        if (index === 0) {
+                        if (index < 2) {
                             tlabel1.text = "Exp bits"
                         } else {
                             tlabel1.text = "Mag bits"

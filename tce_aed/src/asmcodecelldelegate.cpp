@@ -55,6 +55,9 @@ void AsmCodeCellDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     case CodeType::ADDRESS:
         list << asmModel->data(index).toString();
         break;
+    case CodeType::LIMM:
+        list << asmModel->data(index).toString();
+        break;
     case CodeType::EMPTY:
         list << "";
         break;
@@ -108,6 +111,9 @@ QSize AsmCodeCellDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
              + asmModel->destination(index);
         break;
     case CodeType::ADDRESS:
+        text = asmModel->data(index).toString();
+        break;
+    case CodeType::LIMM:
         text = asmModel->data(index).toString();
         break;
     case CodeType::EMPTY:

@@ -107,7 +107,7 @@ bool AsmCodePage::saveFile(QString fileName)
     std::vector<int> sourceLengths = model_->sourceLengths();
 
 
-    for (int row = 0; row < model_->rowCount(); ++row) {
+    for (int row = 0; row < model_->rowCount(); ++row) {        
         if (model_->type(model_->index(row, 0)) == CodeType::COMMENT) {
             stream << model_->data(model_->index(row, 0)).toString() << "\n";
             continue;
@@ -120,7 +120,8 @@ bool AsmCodePage::saveFile(QString fileName)
         bool codeLine = false;
         for (int col = 1; col < model_->columnCount(); ++col) {
             if (model_->type(model_->index(row, col)) == CodeType::MOVE ||
-                    model_->type(model_->index(row, col)) == CodeType::NOP) {
+                    model_->type(model_->index(row, col)) == CodeType::NOP ||
+                    model_->type(model_->index(row, col)) == CodeType::LIMM) {
                 codeLine = true;
                 break;
             }
@@ -138,6 +139,10 @@ bool AsmCodePage::saveFile(QString fileName)
                 } else if (model_->type(model_->index(row, col)) == CodeType::EMPTY
                            || model_->type(model_->index(row, col)) == CodeType::NOP) {
                     stream << QString("...") .leftJustified(model_->columnLength(col));
+                } else if (model_->type(model_->index(row, col)) == CodeType::LIMM) {
+                    QModelIndex idx =  model_->index(row, col);
+                    QString temp = model_->source(idx);
+                    stream << temp;
                 } else {
                     qDebug() << "Error(1) in saving??";
                 }

@@ -39,6 +39,12 @@ void AsmCodeSlot::setData(const QString &data)
                 source_ = lhs;
                 destination_ = rhs;
                 data_ = lhs + " -> " + rhs;
+            } else if (temp.contains('=') ) {
+                type_ = CodeType::LIMM;
+                data_ = temp;
+                source_ = temp;
+                destination_ = temp;
+                //qDebug() << "Lihapulla:" << temp;
             } else {
                 type_ = CodeType::ADDRESS;
                 data_ = temp;

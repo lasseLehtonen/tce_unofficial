@@ -48,6 +48,12 @@ void Worker::convert(qint64 src, qint64 dst,
 
     if (src == 0 && dst == 1) {
         for (auto s : ls) {
+            result << binToHex(floatToBin(s, dstBits1, dstBits2));
+        }
+    }
+
+    if (src == 0 && dst == 2) {
+        for (auto s : ls) {
             result << floatToFixed(s, dstBits1, dstBits2);
         }
     }
@@ -62,6 +68,16 @@ void Worker::convert(qint64 src, qint64 dst,
     }
 
     if (src == 2 && dst == 0) {
+        for (auto s : ls) {
+            s = hexToBin(s);
+            splice = s.size() / srcVectorization;
+
+            for (int i = 0; i < srcVectorization; ++i)
+                result << bitsToFloat(s.mid(i*splice, splice), srcBits1, srcBits2);
+        }
+    }
+
+    if (src == 3 && dst == 0) {
         for (auto s : ls) {
             result << bitsToFixed(s, srcBits1, srcBits2);
         }
@@ -230,6 +246,69 @@ QString Worker::bitsToFixed(QString f, qint64 e, qint64 m)
 {
 
 }
+
+QString Worker::hexToBin(QString s)
+{
+    QString result;
+    for(auto c : s) {
+        switch (c.toLatin1()) {
+        case '0': result += "0000"; break;
+        case '1': result += "0001"; break;
+        case '2': result += "0010"; break;
+        case '3': result += "0011"; break;
+        case '4': result += "0100"; break;
+        case '5': result += "0101"; break;
+        case '6': result += "0110"; break;
+        case '7': result += "0111"; break;
+        case '8': result += "1000"; break;
+        case '9': result += "1001"; break;
+        case 'A':
+        case 'a': result += "1010"; break;
+        case 'B':
+        case 'b': result += "1011"; break;
+        case 'C':
+        case 'c': result += "1100"; break;
+        case 'D':
+        case 'd': result += "1101"; break;
+        case 'E':
+        case 'e': result += "1110"; break;
+        case 'F':
+        case 'f': result += "1111"; break;
+        default: qDebug() << "Error in hexToBin conversion"; result += "xxxx";
+        }
+    }
+    return result;
+}
+
+QString Worker::binToHex(QString s)
+{
+    qDebug() << "binToHex:" << s << "of" << s.size();
+    QString retval;
+    int len = s.size();
+    for (int i = 0; i < len; i+=4) {
+        QString c = s.mid(i, 4);
+        qDebug() << "what is" << c;
+        if (c == "0000") retval += "0";
+        if (c == "0001") retval += "1";
+        if (c == "0010") retval += "2";
+        if (c == "0011") retval += "3";
+        if (c == "0100") retval += "4";
+        if (c == "0101") retval += "5";
+        if (c == "0110") retval += "6";
+        if (c == "0111") retval += "7";
+        if (c == "1000") retval += "8";
+        if (c == "1001") retval += "9";
+        if (c == "1010") retval += "A";
+        if (c == "1011") retval += "B";
+        if (c == "1100") retval += "C";
+        if (c == "1101") retval += "D";
+        if (c == "1110") retval += "E";
+        if (c == "1111") retval += "F";
+    }
+    return retval;
+}
+
+
 
 qint64 Worker::bitsToInt(QString s)
 {
